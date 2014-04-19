@@ -571,6 +571,14 @@ func (self *CoordinatorImpl) InterpolateValuesAndCommit(query string, db string,
 }
 
 func (self *CoordinatorImpl) CommitSeriesData(db string, serieses []*protocol.Series) error {
+	// replace all the field names, or error out if we can't assign the field ids.
+	for _, series := range serieses {
+		err := self.replaceFieldNamesWithIds(series)
+		if err != nil {
+			return err
+		}
+	}
+
 	now := common.CurrentTime()
 
 	shardToSerieses := map[uint32]map[string]*protocol.Series{}
@@ -634,6 +642,11 @@ func (self *CoordinatorImpl) CommitSeriesData(db string, serieses []*protocol.Se
 	}
 
 	return nil
+}
+
+func (self *CoordinatorImpl) replaceFieldNamesWithIds(series []*protocol.Series) error {
+	// call out to metastore to get ids. if they're not there, call out to raft to get them, or error out
+
 }
 
 func (self *CoordinatorImpl) write(db string, series []*protocol.Series, shard cluster.Shard) error {

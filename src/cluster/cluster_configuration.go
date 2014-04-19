@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"metastore"
 	"parser"
 	"protocol"
 	"sort"
@@ -83,6 +84,7 @@ type ClusterConfiguration struct {
 	shardsByIdLock             sync.RWMutex
 	LocalRaftName              string
 	writeBuffers               []*WriteBuffer
+	Metastore                  *metastore.Store
 }
 
 type ContinuousQuery struct {
@@ -437,6 +439,7 @@ type SavedConfiguration struct {
 	ShortTermShards   []*NewShardData
 	LongTermShards    []*NewShardData
 	ContinuousQueries map[string][]*ContinuousQuery
+	Metastore         metastore.Store
 }
 
 func (self *ClusterConfiguration) Save() ([]byte, error) {

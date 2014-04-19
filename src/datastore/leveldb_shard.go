@@ -62,12 +62,11 @@ func (self *LevelDbShard) Write(database string, series *protocol.Series) error 
 		return errors.New("Unable to write no data. Series was nil or had no points.")
 	}
 
-	for fieldIndex, field := range series.Fields {
-		temp := field
-		id, err := self.createIdForDbSeriesColumn(&database, series.Name, &temp)
-		if err != nil {
-			return err
-		}
+	if len(series.FieldIds) == 0 {
+		return errors.New("Unable to write points without fields")
+	}
+
+	for fieldIndex, id := range series.FieldIds {
 		for _, point := range series.Points {
 			keyBuffer := bytes.NewBuffer(make([]byte, 0, 24))
 			keyBuffer.Write(id)
@@ -513,7 +512,9 @@ func (self *LevelDbShard) getFieldsForSeries(db, series string, columns []string
 	return fields, nil
 }
 
-func (self *LevelDbShard) getColumnNamesForSeries(db, series string) []string {
+// TODO: remove this function. I'm keeping it around for the moment since it'll probably have to be
+//       used in the DB upgrate/migration that moves metadata from the shard to Raft
+func (self *LevelDbShard) getColumnNamesForSeriesDEPRECATED(db, series string) []string {
 	it := self.db.NewIterator(self.readOptions)
 	defer it.Close()
 
@@ -556,7 +557,8 @@ func (self *LevelDbShard) byteArrayForTime(t time.Time) []byte {
 	return timeBuffer.Bytes()
 }
 
-func (self *LevelDbShard) getSeriesForDbAndRegex(database string, regex *regexp.Regexp) []string {
+// TODO: this needs to move to the metastore
+func (self *LevelDbShard) getSeriesForDbAndRegexDEPRECATED(database string, regex *regexp.Regexp) []string {
 	names := []string{}
 	allSeries := self.getSeriesForDatabase(database)
 	for _, name := range allSeries {
@@ -567,7 +569,8 @@ func (self *LevelDbShard) getSeriesForDbAndRegex(database string, regex *regexp.
 	return names
 }
 
-func (self *LevelDbShard) getSeriesForDatabase(database string) []string {
+// TODO: move to the metastore
+func (self *LevelDbShard) getSeriesForDatabaseDEPRECATED(database string) []string {
 	it := self.db.NewIterator(self.readOptions)
 	defer it.Close()
 
@@ -593,7 +596,8 @@ func (self *LevelDbShard) getSeriesForDatabase(database string) []string {
 	return names
 }
 
-func (self *LevelDbShard) createIdForDbSeriesColumn(db, series, column *string) (ret []byte, err error) {
+// TODO: move to the metastore
+func (self *LevelDbShard) createIdForDbSeriesColumnDEPRECATED(db, series, column *string) (ret []byte, err error) {
 	ret, err = self.getIdForDbSeriesColumn(db, series, column)
 	if err != nil {
 		return
@@ -614,7 +618,8 @@ func (self *LevelDbShard) createIdForDbSeriesColumn(db, series, column *string) 
 	return
 }
 
-func (self *LevelDbShard) getIdForDbSeriesColumn(db, series, column *string) (ret []byte, err error) {
+// TODO: move to metastore
+func (self *LevelDbShard) getIdForDbSeriesColumnDEPRECATED(db, series, column *string) (ret []byte, err error) {
 	s := fmt.Sprintf("%s~%s~%s", *db, *series, *column)
 	b := []byte(s)
 	key := append(SERIES_COLUMN_INDEX_PREFIX, b...)
@@ -624,7 +629,8 @@ func (self *LevelDbShard) getIdForDbSeriesColumn(db, series, column *string) (re
 	return ret, nil
 }
 
-func (self *LevelDbShard) getNextIdForColumn(db, series, column *string) (ret []byte, err error) {
+// TODO: move to metastore
+func (self *LevelDbShard) getNextIdForColumnDEPRECATED(db, series, column *string) (ret []byte, err error) {
 	self.columnIdMutex.Lock()
 	defer self.columnIdMutex.Unlock()
 	id := self.lastIdUsed + 1
