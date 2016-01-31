@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/bmizerany/pat"
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/influxdata/influxdb"
 	"github.com/influxdata/influxdb/influxql"
 	"github.com/influxdata/influxdb/models"
@@ -427,7 +427,7 @@ func (h *Handler) serveQuery(w http.ResponseWriter, r *http.Request, user meta.U
 	}
 
 	// Execute query.
-	rw.Header().Add("Connection", "close")
+	// rw.Header().Add("Connection", "close")
 	results := h.QueryExecutor.ExecuteQuery(query, opts, closing)
 
 	// If we are running in async mode, open a goroutine to drain the results
