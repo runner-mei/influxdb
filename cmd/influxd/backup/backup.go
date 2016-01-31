@@ -360,7 +360,10 @@ Options:
 func retentionAndShardFromPath(path string) (retention, shard string, err error) {
 	a := strings.Split(path, string(filepath.Separator))
 	if len(a) != 3 {
-		return "", "", fmt.Errorf("expected database, retention policy, and shard id in path: %s", path)
+		a = strings.Split(path, "\\")
+		if len(a) != 3 {
+			return "", "", fmt.Errorf("expected database, retention policy, and shard id in path: %s", path)
+		}
 	}
 
 	return a[1], a[2], nil
