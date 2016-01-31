@@ -36,13 +36,14 @@ func LoadNode(path, addr string) (*Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 
-	if err := json.NewDecoder(f).Decode(n); err != nil {
-		return nil, err
+	err = json.NewEncoder(f).Encode(n)
+	f.Close()
+	if err != nil {
+		return err
 	}
 
-	return n, nil
+	return os.Rename(tmpFile, file)
 }
 
 // NewNode will return a new node
