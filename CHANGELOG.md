@@ -25,6 +25,7 @@
 
 ### Features
 
+- [#6212](https://github.com/influxdata/influxdb/pull/6212): Fix TestMetaClient_CreateDatabaseIfNotExists fail on the windows.
 - [#6012](https://github.com/influxdata/influxdb/pull/6012): Add DROP SHARD support.
 - [#6025](https://github.com/influxdata/influxdb/pull/6025): Remove deprecated JSON write path.
 - [#5744](https://github.com/influxdata/influxdb/issues/5744): Add integer literal support to the query language.
