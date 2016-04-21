@@ -1001,7 +1001,6 @@ func snapshot(path string, data *Data) error {
 	if err = f.Sync(); err != nil {
 		return err
 	}
-	f.Close() // must close file before rename file.
 
 	//close file handle before renaming to support Windows
 	if err = f.Close(); err != nil {
